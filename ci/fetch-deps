@@ -39,6 +39,7 @@ if [ ! -d $dir/.cmake/bin ]; then
     tar -xzf cmake.tar.gz -C $dir
     mv $dir/cmake-${cmake_ver}.0-Linux-x86_64 $dir/.cmake
 fi
+find $dir/.cmake
 cmake --version
 
 # extra-cmake-modules
@@ -53,3 +54,4 @@ if [ ! -d $dir/.ecm/share/ECM ]; then
     make && make install
     popd
 fi
+find $dir/.ecm
