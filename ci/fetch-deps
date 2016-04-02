@@ -31,6 +31,8 @@ ecm_ver=5.12
 
 dir=`pwd`
 
+export PATH=$dir/.cmake/bin:$dir/.ecm/bin:$PATH
+
 # cmake
 if [ ! -d $dir/.cmake/bin ]; then
     wget --no-check-certificate http://www.cmake.org/files/v${cmake_ver}/cmake-${cmake_ver}.0-Linux-x86_64.tar.gz -O cmake.tar.gz
