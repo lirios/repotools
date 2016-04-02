@@ -28,30 +28,46 @@
 
 cmake_ver=3.3
 ecm_ver=5.12
+qt_ver=5.6
 
 dir=`pwd`
 
-export PATH=$dir/.cmake/bin:$PATH
+export PATH=$dir/.cmake/bin:$dir/.qt/$qt_ver/bin:$PATH
 
 # cmake
 if [ ! -d $dir/.cmake/bin ]; then
     rm -rf $dir/.cmake
-    wget --no-check-certificate http://www.cmake.org/files/v${cmake_ver}/cmake-${cmake_ver}.0-Linux-x86_64.tar.gz -O cmake.tar.gz
+    cmake_basename="cmake-${cmake_ver}.0-Linux-x86_64"
+    wget --no-check-certificate http://www.cmake.org/files/v${cmake_ver}/${cmake_basename}.tar.gz -O cmake.tar.gz
     tar -xzf cmake.tar.gz -C $dir
-    mv $dir/cmake-${cmake_ver}.0-Linux-x86_64 $dir/.cmake
+    mv $dir/${cmake_basename} $dir/.cmake
 fi
 cmake --version
 
 # extra-cmake-modules
 if [ ! -d $dir/.ecm/share/ECM ]; then
     rm -rf $dir/.ecm
-    wget --no-check-certificate http://download.kde.org/stable/frameworks/${ecm_ver}/extra-cmake-modules-${ecm_ver}.0.tar.xz -O ecm.tar.xz
+    ecm_basename="extra-cmake-modules-${ecm_ver}.0"
+    wget --no-check-certificate http://download.kde.org/stable/frameworks/${ecm_ver}/${ecm_basename}.tar.xz -O ecm.tar.xz
     tar -xJf ecm.tar.xz
-    pushd extra-cmake-modules-${ecm_ver}.0
+    pushd ${ecm_basename}
     rm -rf build
     mkdir build
     cd build
     cmake .. -DCMAKE_INSTALL_PREFIX=$dir/.ecm
     make && make install
     popd
+fi
+
+# Qt
+if [ ! -d $dir/.qt/$qt_ver/bin ]; then
+    rm -rf $dir/.qt/$qt_ver
+    qt_url="http://download.qt.io/official_releases/qt/${qt_ver}/${qt_ver}.0"
+    qt_basename="qt-opensource-linux-x64-${qt_ver}.0"
+    wget --no-check-certificate ${qt_url}/${qt_basename}.run
+    wget --no-check-certificate ${qt_url}/${qt_basename}.run.sha256
+    sha256sum -c ${qt_basename}.run.sha256 || exit $?
+    curl https://raw.githubusercontent.com/hawaii-desktop/repotools/master/ci/extract-qt-installer >extract-qt-installer
+    chmod u+x extract-qt-installer
+    QT_QPA_PLATFORM=minimal ./extract-qt-installer ${qt_basename}.run $dir/.qt/$qt_ver
 fi
