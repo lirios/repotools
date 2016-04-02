@@ -29,23 +29,25 @@
 cmake_ver=3.3
 ecm_ver=5.12
 
+dir=`pwd`
+
 # cmake
-if [ ! -d $HOME/.cmake ]; then
+if [ ! -d $dir/.cmake ]; then
     wget --no-check-certificate http://www.cmake.org/files/v${cmake_ver}/cmake-${cmake_ver}.0-Linux-x86_64.tar.gz -O cmake.tar.gz
-    tar -xzf cmake.tar.gz -C $HOME
-    mv $HOME/cmake-${cmake_ver}.0-Linux-x86_64 $HOME/.cmake
+    tar -xzf cmake.tar.gz -C $dir
+    mv $dir/cmake-${cmake_ver}.0-Linux-x86_64 $dir/.cmake
 fi
 cmake --version
 
 # extra-cmake-modules
-if [ ! -d $HOME/.ecm ]; then
+if [ ! -d $dir/.ecm ]; then
     wget --no-check-certificate http://download.kde.org/stable/frameworks/${ecm_ver}/extra-cmake-modules-${ecm_ver}.0.tar.xz -O ecm.tar.xz
     tar -xJf ecm.tar.xz
     pushd extra-cmake-modules-${ecm_ver}.0
     rm -rf build
     mkdir build
     cd build
-    cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/.ecm
+    cmake .. -DCMAKE_INSTALL_PREFIX=$dir/.ecm
     make && make install
     popd
 fi
