@@ -45,8 +45,7 @@ fi
 cmake --version
 
 # extra-cmake-modules
-if [ ! -d $dir/.ecm/share/ECM ]; then
-    rm -rf $dir/.ecm
+if [ ! -d $dir/.cmake/share/ECM ]; then
     ecm_basename="extra-cmake-modules-${ecm_ver}.0"
     wget --no-check-certificate http://download.kde.org/stable/frameworks/${ecm_ver}/${ecm_basename}.tar.xz -O ecm.tar.xz
     tar -xJf ecm.tar.xz
@@ -54,7 +53,7 @@ if [ ! -d $dir/.ecm/share/ECM ]; then
     rm -rf build
     mkdir build
     cd build
-    cmake .. -DCMAKE_INSTALL_PREFIX=$dir/.ecm
+    cmake .. -DCMAKE_INSTALL_PREFIX=$dir/.cmake
     make && make install
     popd
 fi
