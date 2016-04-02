@@ -59,7 +59,7 @@ if [ ! -d $dir/.cmake/share/ECM ]; then
 fi
 
 # Qt
-if [ ! -d $dir/.qt/$qt_ver/bin ]; then
+if [ ! -d $dir/.qt/$qt_ver/$qt_ver/gcc_64 ]; then
     rm -rf $dir/.qt/$qt_ver
     qt_url="http://download.qt.io/official_releases/qt/${qt_ver}/${qt_ver}.0"
     qt_basename="qt-opensource-linux-x64-${qt_ver}.0"
