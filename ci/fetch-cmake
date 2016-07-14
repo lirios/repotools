@@ -26,7 +26,7 @@
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-cmake_ver=3.3
+cmake_ver=3.6
 ecm_ver=5.12
 
 dir=`pwd`
