@@ -33,6 +33,10 @@
 # $END_LICENSE$
 #
 
+# Please bear in mind that that you need to copy config/_clang-format
+# in the root of your project as .clang-format - this script will not
+# format the code correctly if you don't do that
+
 path=$1
 
 if [ -z "$path" ]; then
