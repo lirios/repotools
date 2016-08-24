@@ -7,4 +7,5 @@ Tools to manage the git repositories.
 * bin/format: Format C/C++ code with clang-format.
 * config/_clang-format: Copy this file to the root of your repository
   as .clang-format in order to format with clang-format using the Qt style.
+* config/_commit-template: Template for commit messages.
 * licenses/*: License texts and copyright notice templates.
