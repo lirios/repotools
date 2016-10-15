@@ -43,7 +43,7 @@ function check_availability() {
 
 # Restrict Bintray deployment to certain branches and a compile
 # in order to create artifacts only once
-if [ $TRAVIS_BRANCH != "develop" -o $TRAVIS_BRANCH != "master" ]; then
+if ! [ $TRAVIS_BRANCH = "develop" -o $TRAVIS_BRANCH = "master" ]; then
     echo "Will not make artifacts for branch $TRAVIS_BRANCH"
     exit 0
 fi
