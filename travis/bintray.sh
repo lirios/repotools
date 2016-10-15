@@ -47,6 +47,10 @@ if [ $TRAVIS_BRANCH != "develop" ]; then
     echo "Will not make artifacts for branch $TRAVIS_BRANCH"
     exit 0
 fi
+if [ $TRAVIS_PULL_REQUEST != "false" ]; then
+    echo "Will not make artifacts for pull requests"
+    exit 0
+fi
 if [ $CC != "gcc" ]; then
     echo "Will not make artifacts on $CC builds"
     exit 0
