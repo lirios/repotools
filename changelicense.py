@@ -1,11 +1,8 @@
 #!/usr/bin/env python
-#***************************************************************************
-# This file is part of Hawaii.
 #
-# Copyright (c) 2012-2015 Pier Luigi Fiorini
+# This file is part of Liri.
 #
-# Author(s):
-#    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+# Copyright (C) 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 # $BEGIN_LICENSE:BSD$
 #
@@ -18,7 +15,7 @@
 #    * Redistributions in binary form must reproduce the above copyright
 #      notice, this list of conditions and the following disclaimer in the
 #      documentation and/or other materials provided with the distribution.
-#    * Neither the name of the Hawaii Project nor the
+#    * Neither the name of the Liri project nor the
 #      names of its contributors may be used to endorse or promote products
 #      derived from this software without specific prior written permission.
 #
@@ -34,7 +31,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # $END_LICENSE$
-#**************************************************************************/
+#
 
 srclicense = dstlicense = ""
 srctext = dsttext = ""
