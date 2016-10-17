@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+#
+# This file is part of Liri.
+#
+# Copyright (C) 2016 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+# $BEGIN_LICENSE:BSD$
+#
+# You may use this file under the terms of the BSD license as follows:
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#    * Redistributions of source code must retain the above copyright
+#      notice, this list of conditions and the following disclaimer.
+#    * Redistributions in binary form must reproduce the above copyright
+#      notice, this list of conditions and the following disclaimer in the
+#      documentation and/or other materials provided with the distribution.
+#    * Neither the name of the Liri project nor the
+#      names of its contributors may be used to endorse or promote products
+#      derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL Pier Luigi Fiorini BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# $END_LICENSE$
+#
+
+import os
+import github3
+from auth import authorize
+
+CREDENTIALS_FILE = os.path.expanduser("~/.config/liri")
+SCOPES = ["user", "public_repo"]
+NOTE = "Liri - Issue labels setup"
+NOTE_URL = "http://liri.io"
+
+rename = {
+    "need info": "needs info",
+}
+
+labels = {
+    "bug": "F44336",
+    "duplicate": "EEEEEE",
+    "invalid": "EEEEEE",
+    "wontfix": "EEEEEE",
+    "needs info": "EEEEEE",
+    "enhancement": "039BE5",
+    "feature": "039BE5",
+    "help wanted": "FFC107",
+    "question": "E91E63",
+    "task": "009688",
+    "idea": "009688",
+    "doc": "00BCD4",
+    "fixed upstream": "8BC34A",
+    "upstream": "FF8A80",
+    "needs design": "FFC107",
+}
+
+gh = authorize(CREDENTIALS_FILE, SCOPES, NOTE, NOTE_URL)
+
+org = gh.organization("lirios")
+for repo in org.repositories("public"):
+    print("== Repository {0}".format(repo.name))
+    # Rename old labels
+    for oldname, newname in rename.items():
+        label = repo.label(oldname)
+        if label is not None:
+            if label.update(newname, label.color):
+                print("Rename {0} to {1}".format(oldname, newname))
+    # Create new labels and change color
+    for name in labels.keys():
+        label = repo.label(name)
+        if not label:
+            label = repo.create_label(name, labels[name])
+            if label:
+                print("Created label {0} with color {1}".format(label.name, label.color))
+            else:
+                print("Failed to created label {0} with color {1}".format(name, labels[name]))
+        if not label:
+            break
+        if label.color != labels[name]:
+            if label.update(name, labels[name]):
+                print("Set {0} color to {1} successfully".format(label.name, label.color))
+            else:
+                print("Failed to set {0} color to {1}".format(name, labels[name]))
