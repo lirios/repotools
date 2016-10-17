@@ -37,7 +37,7 @@ import os
 import github3
 from auth import authorize
 
-CREDENTIALS_FILE = os.path.expanduser("~/.config/liri")
+CREDENTIALS_FILE = os.path.expanduser("~/.cache/liri-repotools")
 SCOPES = ["user", "public_repo"]
 NOTE = "Liri - Issue labels setup"
 NOTE_URL = "http://liri.io"
