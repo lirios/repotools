@@ -67,7 +67,7 @@ labels = {
 gh = authorize(CREDENTIALS_FILE, SCOPES, NOTE, NOTE_URL)
 
 org = gh.organization("lirios")
-for repo in org.repositories("public"):
+for repo in org.iter_repos(type="public"):
     print("== Repository {0}".format(repo.name))
     # Rename old labels
     for oldname, newname in rename.items():
