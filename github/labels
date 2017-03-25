@@ -58,6 +58,7 @@ labels = {
     "question": "E91E63",
     "task": "009688",
     "idea": "009688",
+    "package": "795548",
     "doc": "00BCD4",
     "fixed upstream": "8BC34A",
     "upstream": "FF8A80",
