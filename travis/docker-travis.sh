@@ -23,9 +23,6 @@ simulate=0
 # docker image
 docker_image="liri-docker-build.bintray.io/archlinux/devel"
 
-# default packages
-default_packages=("base-devel" "git")
-
 # script to run in the container
 docker_script="/tmp/docker-travis.sh"
 
@@ -113,7 +110,6 @@ read_config
 
 echo 'arch_msg "Install packages"' >> $docker_script
 echo "pacman -Syy --noprogressbar >/dev/null" >> $docker_script
-echo "pacman -Syu ${default_packages[*]} --noconfirm --noprogressbar >/dev/null" >> $docker_script
 install_packages
 install_c_compiler
 unpack_artifacts
