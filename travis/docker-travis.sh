@@ -71,13 +71,13 @@ install_c_compiler() {
     fi
 }
 
-# download and unpack artifacts to /usr
+# download and unpack artifacts to /
 unpack_artifacts() {
     if [ ${#CONFIG_ARTIFACTS[@]} -gt 0 ]; then
         for artifact in "${CONFIG_ARTIFACTS[@]}"; do
             filename=$(basename "$artifact")
-            echo "wget \"$artifact\"" >> $docker_script
-            echo "tar xf $filename -C /usr" >> $docker_script
+            echo "curl \"$artifact\" > $filename" >> $docker_script
+            echo "tar xf $filename -C /" >> $docker_script
         done
     fi
 }
