@@ -110,6 +110,7 @@ read_config
 
 echo 'arch_msg "Install packages"' >> $docker_script
 echo "pacman -Syy --noprogressbar >/dev/null" >> $docker_script
+echo "pacman -Syu --noconfirm --noprogressbar >/dev/null" >> $docker_script
 install_packages
 install_c_compiler
 unpack_artifacts
