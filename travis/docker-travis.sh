@@ -76,8 +76,7 @@ unpack_artifacts() {
     if [ ${#CONFIG_ARTIFACTS[@]} -gt 0 ]; then
         for artifact in "${CONFIG_ARTIFACTS[@]}"; do
             filename=$(basename "$artifact")
-            echo 'echo "download $artifact"' >> $docker_script
-            echo "curl \"$artifact\" > $filename" >> $docker_script
+            echo "curl -u $FTP_USER:$FTP_PASSWORD $FTP_URL/artifacts/$TRAVIS_BRANCH/$artifact > $filename" >> $docker_script
             echo "tar xf $filename -C /" >> $docker_script
         done
     fi
@@ -125,6 +124,9 @@ build_scripts
 # run
 if [ $simulate -eq 0 ]; then
     env_vars=""
+    for line in $(env | grep ^FTP); do
+        env_vars="$env_vars -e $line"
+    done
     for line in $(env | grep ^TRAVIS); do
         env_vars="$env_vars -e $line"
     done
