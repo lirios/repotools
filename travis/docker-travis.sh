@@ -76,6 +76,7 @@ unpack_artifacts() {
     if [ ${#CONFIG_ARTIFACTS[@]} -gt 0 ]; then
         for artifact in "${CONFIG_ARTIFACTS[@]}"; do
             filename=$(basename "$artifact")
+            echo 'echo "download $artifact"' >> $docker_script
             echo "curl \"$artifact\" > $filename" >> $docker_script
             echo "tar xf $filename -C /" >> $docker_script
         done
