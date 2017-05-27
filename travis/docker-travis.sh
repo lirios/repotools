@@ -123,7 +123,7 @@ build_scripts
 
 # run
 if [ $simulate -eq 0 ]; then
-    env_vars=""
+    env_vars="-e CC=$CC -e CLAZY_CHECKS=$CLAZY_CHECKS"
     for line in $(env | grep ^FTP); do
         env_vars="$env_vars -e $line"
     done
@@ -132,6 +132,6 @@ if [ $simulate -eq 0 ]; then
     done
 
     docker pull $docker_image
-    docker run -i --rm -v $docker_script:/build.sh -v $(pwd):/home -e CC=$CC $env_vars --workdir /home $docker_image /build.sh
+    docker run -i --rm -v $docker_script:/build.sh -v $(pwd):/home $env_vars --workdir /home $docker_image /build.sh
     rm -f $docker_script
 fi
