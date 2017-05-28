@@ -4,6 +4,7 @@ Repository tools
 Tools to manage the git repositories.
 
 * changelicense.py: Change license notice in source code files.
+* make-release-archive.sh: Create release tarballs.
 * github: Python scripts to automate Github administration.
 * bin/format: Format C/C++ code with clang-format.
 * config/_clang-format: Copy this file to the root of your repository
