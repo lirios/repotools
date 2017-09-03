@@ -101,8 +101,6 @@ arch_msg() {
     echo -e "\${lightblue}$@\${reset}"
 }
 
-env
-
 EOF
 chmod 755 $docker_script
 
