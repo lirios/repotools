@@ -21,7 +21,7 @@ simulate=0
 [ "$1" = "test" ] && simulate=1
 
 # docker image
-docker_image="liri-docker-build.bintray.io/archlinux/devel"
+docker_image="liridev/archlinux-base"
 
 # script to run in the container
 docker_script="/tmp/docker-travis.sh"
