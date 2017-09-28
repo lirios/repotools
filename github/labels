@@ -52,6 +52,7 @@ labels = {
     "invalid": "EEEEEE",
     "wontfix": "EEEEEE",
     "needs info": "EEEEEE",
+    "needs reproduction": "EEEEEE",
     "enhancement": "039BE5",
     "feature": "039BE5",
     "help wanted": "FFC107",
