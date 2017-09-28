@@ -63,6 +63,8 @@ labels = {
     "fixed upstream": "8BC34A",
     "upstream": "FF8A80",
     "needs design": "FFC107",
+    "hacktoberfest": "3F51B5",
+    "easy": "4CAF50",
 }
 
 gh = authorize(CREDENTIALS_FILE, SCOPES, NOTE, NOTE_URL)
