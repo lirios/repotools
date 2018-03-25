@@ -76,7 +76,11 @@ unpack_artifacts() {
     if [ ${#CONFIG_ARTIFACTS[@]} -gt 0 ]; then
         for artifact in "${CONFIG_ARTIFACTS[@]}"; do
             filename=$(basename "$artifact")
-            echo "curl https://$DEPLOY_HOST/artifacts/$TRAVIS_BRANCH/$artifact > $filename" >> $docker_script
+            branch=$TRAVIS_BRANCH
+            if [ "${branch:0:1}" = "v" ]; then
+                branch=master
+            fi
+            echo "curl https://$DEPLOY_HOST/artifacts/$branch/$artifact > $filename" >> $docker_script
             echo "tar xf $filename -C /" >> $docker_script
         done
     fi
