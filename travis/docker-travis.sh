@@ -125,11 +125,8 @@ build_scripts
 
 # run
 if [ $simulate -eq 0 ]; then
-    env_vars="-e CC=$CC -e CLAZY_CHECKS=$CLAZY_CHECKS"
-    for line in $(env | grep ^FTP); do
-        env_vars="$env_vars -e $line"
-    done
-    for line in $(env | grep ^TRAVIS); do
+    env_vars="-e CC=$CC"
+    for line in $(env | egrep -e '^(FTP|DEPLOY|TRAVIS|CLAZY)'); do
         env_vars="$env_vars -e $line"
     done
 
