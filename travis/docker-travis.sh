@@ -86,12 +86,6 @@ unpack_artifacts() {
     fi
 }
 
-arch_msg() {
-    lightblue='\033[1;34m'
-    reset='\e[0m'
-    echo -e "${lightblue}$@${reset}"
-}
-
 [ -z "$CC" ] && CC=gcc
 
 cat > $docker_script <<EOF
@@ -99,7 +93,7 @@ cat > $docker_script <<EOF
 
 set -e
 
-arch_msg() {
+ci_msg() {
     lightblue='\\033[1;34m'
     reset='\\e[0m'
     echo -e "\${lightblue}$@\${reset}"
@@ -110,7 +104,7 @@ chmod 755 $docker_script
 
 read_config
 
-echo 'arch_msg "Install packages"' >> $docker_script
+echo 'ci_msg "Install packages"' >> $docker_script
 echo "pacman -Syy --noprogressbar" >> $docker_script
 echo "pacman -Syu --noconfirm --noprogressbar >/dev/null 2>&1" >> $docker_script
 install_packages
@@ -120,7 +114,7 @@ unpack_artifacts
 echo 'echo "travis_fold:end:arch_travis"' >> $docker_script
 echo 'echo ""' >> $docker_script
 
-echo 'arch_msg "Running travis build"' >> $docker_script
+echo 'ci_msg "Running travis build"' >> $docker_script
 build_scripts
 
 # run
