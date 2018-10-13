@@ -44,8 +44,7 @@ NOTE_URL = "https://liri.io"
 
 gh = authorize(CREDENTIALS_FILE, SCOPES, NOTE, NOTE_URL)
 
-org = gh.organization("lirios")
-for repo in org.repositories(type="public"):
+for repo in github3.repositories_by(username="lirios", type="owner"):
     if repo.has_wiki:
         print("== Repository {0}".format(repo.name))
         repo.edit(repo.name, has_wiki=False)
