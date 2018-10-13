@@ -69,6 +69,17 @@ labels = {
     "good first issue": "4CAF50",
 }
 
+descriptions = {
+    "bug": "Something isn't working",
+    "duplicate": "This issue or pull request already exists",
+    "enhancement": "New feature or request",
+    "good first issue": "Good for newcomers",
+    "help wanted": "Extra attention is needed",
+    "invalid": "This doesn't seem right",
+    "question": "Further information is requested",
+    "wontfix": "This will not be worked on",
+}
+
 gh = authorize(CREDENTIALS_FILE, SCOPES, NOTE, NOTE_URL)
 
 for repo in github3.repositories_by(username="lirios", type="owner"):
@@ -85,13 +96,16 @@ for repo in github3.repositories_by(username="lirios", type="owner"):
         if not label:
             label = repo.create_label(name, labels[name])
             if label:
-                print("Created label {0} with color {1}".format(label.name, label.color))
+                print("Created label {} with color {}".format(label.name, label.color))
             else:
-                print("Failed to created label {0} with color {1}".format(name, labels[name]))
+                print("Failed to created label {}".format(name))
         if not label:
             break
-        if label.color != labels[name]:
-            if label.update(name, labels[name]):
-                print("Set {0} color to {1} successfully".format(label.name, label.color))
+        if label.color != labels[name] or label.description != descriptions.get(name):
+            if label.update(name, labels[name], description=descriptions.get(name)):
+                if descriptions.get(name):
+                    print("Set {} color and description \"{}\" to {} successfully".format(label.color, descriptions.get(name), label.color))
+                else:
+                    print("Set {} color to {} successfully".format(label.color, label.color))
             else:
-                print("Failed to set {0} color to {1}".format(name, labels[name]))
+                print("Failed to set color and description on {}".format(name))
