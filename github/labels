@@ -41,15 +41,18 @@ rename = {
     "easy": "good first issue",
 }
 
+merge = {
+    "needs reproduction": "needs info",
+    "feature": "enhancement",
+}
+
 labels = {
     "bug": "F44336",
     "duplicate": "EEEEEE",
     "invalid": "EEEEEE",
     "wontfix": "EEEEEE",
     "needs info": "EEEEEE",
-    "needs reproduction": "EEEEEE",
     "enhancement": "039BE5",
-    "feature": "039BE5",
     "help wanted": "FFC107",
     "question": "E91E63",
     "task": "009688",
@@ -66,12 +69,21 @@ labels = {
 descriptions = {
     "bug": "Something isn't working",
     "duplicate": "This issue or pull request already exists",
-    "enhancement": "New feature or request",
-    "good first issue": "Good for newcomers",
-    "help wanted": "Extra attention is needed",
     "invalid": "This doesn't seem right",
-    "question": "Further information is requested",
     "wontfix": "This will not be worked on",
+    "needs info": "Further information is requested",
+    "enhancement": "New feature or request",
+    "help wanted": "Extra attention is needed",
+    "question": "Further information is requested",
+    "task": "Task",
+    "idea": "Idea to be developed",
+    "package": "Packaging",
+    "doc": "Documentation",
+    "fixed upstream": "Upstream issue that has already been fixed",
+    "upstream": "Upstream issue",
+    "needs design": "This could use some help from a designer",
+    "hacktoberfest": "Hacktoberfest",
+    "good first issue": "Good for newcomers",
 }
 
 with open(os.path.expanduser("~/.cache/liri-repotools"), "r") as fd:
@@ -112,3 +124,14 @@ for repo in lirios_org.get_repos(type="public"):
                     print("Set {} color and description \"{}\" to {} successfully".format(label.color, descriptions.get(name), label.color))
                 else:
                     print("Set {} color to {} successfully".format(label.color, label.color))
+    # Merge labels
+    for oldname, newname in merge.items():
+        try:
+            old_label = repo.get_label(oldname)
+            new_label = repo.get_label(newname)
+            for issue in repo.get_issues(labels=[label]):
+                issue.add_to_labels(new_label)
+            old_label.delete()
+            print("Replace \"{}\" label with \"{}\"".format(oldname, newname))
+        except:
+            pass
