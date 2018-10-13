@@ -47,6 +47,10 @@ for org in gh.get_user().get_orgs():
         break
 
 for repo in lirios_org.get_repos(type="public"):
+    # Skip archived repositories (they are read-only)
+    if repo.archived is True:
+        continue
+    # Edit repository
     if repo.has_wiki:
         print("== Repository {}".format(repo.name))
         repo.edit(repo.name, has_wiki=False)

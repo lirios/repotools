@@ -97,6 +97,9 @@ for org in gh.get_user().get_orgs():
         break
 
 for repo in lirios_org.get_repos(type="public"):
+    # Skip archived repositories (they are read-only)
+    if repo.archived is True:
+        continue
     print("== Repository {}".format(repo.name))
     # Rename old labels
     for oldname, newname in rename.items():
