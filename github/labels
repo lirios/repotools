@@ -33,14 +33,8 @@
 # $END_LICENSE$
 #
 
+import github
 import os
-import github3
-from auth import authorize
-
-CREDENTIALS_FILE = os.path.expanduser("~/.cache/liri-repotools")
-SCOPES = ["user", "public_repo"]
-NOTE = "Liri - Issue labels setup"
-NOTE_URL = "https://liri.io"
 
 rename = {
     "need info": "needs info",
@@ -80,35 +74,41 @@ descriptions = {
     "wontfix": "This will not be worked on",
 }
 
-gh = authorize(CREDENTIALS_FILE, SCOPES, NOTE, NOTE_URL)
+with open(os.path.expanduser("~/.cache/liri-repotools"), "r") as fd:
+    token = fd.readline().strip()
+gh = github.Github(token)
 
-for repo in github3.repositories_by(username="lirios", type="owner"):
-    print("== Repository {0}".format(repo.name))
+lirios_org = None
+for org in gh.get_user().get_orgs():
+    if org.login == "lirios":
+        lirios_org = org
+        break
+
+for repo in lirios_org.get_repos(type="public"):
+    print("== Repository {}".format(repo.name))
     # Rename old labels
     for oldname, newname in rename.items():
         try:
-            label = repo.label(oldname)
-        except github3.exceptions.NotFoundError:
+            label = repo.get_label(oldname)
+        except:
             pass
         else:
-            if label.update(newname, label.color):
+            if label.edit(newname, label.color):
                 print("Rename {} to {}".format(oldname, newname))
     # Create new labels and change color
     for name in labels.keys():
-        label = repo.label(name)
-        if not label:
-            label = repo.create_label(name, labels[name])
+        try:
+            label = repo.get_label(name)
+        except:
+            label = repo.create_label(name, labels[name], description=descriptions.get(name))
             if label:
-                print("Created label {} with color {}".format(label.name, label.color))
+                print("Created label {} ({}) with color {}".format(label.name, descriptions.get(name, "n.a."), label.color))
             else:
                 print("Failed to created label {}".format(name))
-        if not label:
-            break
-        if label.color != labels[name] or label.description != descriptions.get(name):
-            if label.update(name, labels[name], description=descriptions.get(name)):
+        else:
+            if label.color != labels[name] or label.description != descriptions.get(name):
+                label.edit(name, labels[name], description=descriptions.get(name))
                 if descriptions.get(name):
                     print("Set {} color and description \"{}\" to {} successfully".format(label.color, descriptions.get(name), label.color))
                 else:
                     print("Set {} color to {} successfully".format(label.color, label.color))
-            else:
-                print("Failed to set color and description on {}".format(name))
