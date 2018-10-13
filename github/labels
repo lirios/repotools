@@ -86,10 +86,13 @@ for repo in github3.repositories_by(username="lirios", type="owner"):
     print("== Repository {0}".format(repo.name))
     # Rename old labels
     for oldname, newname in rename.items():
-        label = repo.label(oldname)
-        if label is not None:
+        try:
+            label = repo.label(oldname)
+        except github3.exceptions.NotFoundError:
+            pass
+        else:
             if label.update(newname, label.color):
-                print("Rename {0} to {1}".format(oldname, newname))
+                print("Rename {} to {}".format(oldname, newname))
     # Create new labels and change color
     for name in labels.keys():
         label = repo.label(name)
