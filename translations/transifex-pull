@@ -53,31 +53,33 @@ if __name__ == '__main__':
     subprocess.run(['tx', 'pull', '--force', '--all', '--minimum-perc=5'], cwd=args.source)
 
     # Push changes if under CI
-    if os.environ.get('CI', 'x').lower() == 'true':
-        globs = []
+    is_ci = os.environ.get('CI', 'x').lower() == 'true'
+    globs = []
 
-        # Determine the file globs
-        for section in config.sections():
-            if config.has_option(section, 'file_filter'):
-                globs.append(config.get(section, 'file_filter').replace('<lang>', '*'))
-            # Regenerate desktop file
-            if config.has_option(section, 'type'):
-                source_type = config.get(section, 'type').upper()
-                source_file = config.get(section, 'source_file')
-                if source_type == 'DESKTOP':
-                    dest_file = config.get(section, 'liri_dest_file')
-                    file_filter = config.get(section, 'file_filter').replace('<lang>', '*')
-                    dir_path = os.path.dirname(os.path.realpath(__file__))
-                    subprocess.run([os.path.join(dir_path, 'translate-desktop'), '--source=' + source_file, '--dest=' + dest_file] + glob.glob(file_filter), cwd=args.source)
+    # Determine the file globs
+    for section in config.sections():
+        if config.has_option(section, 'file_filter'):
+            globs.append(config.get(section, 'file_filter').replace('<lang>', '*'))
+        # Regenerate desktop file
+        if config.has_option(section, 'type'):
+            source_type = config.get(section, 'type').upper()
+            source_file = config.get(section, 'source_file')
+            if source_type == 'DESKTOP':
+                dest_file = config.get(section, 'liri_dest_file')
+                file_filter = config.get(section, 'file_filter').replace('<lang>', '*')
+                dir_path = os.path.dirname(os.path.realpath(__file__))
+                subprocess.run([os.path.join(dir_path, 'translate-desktop'), '--source=' + source_file, '--dest=' + dest_file] + glob.glob(file_filter), cwd=args.source)
+                if is_ci:
                     subprocess.run(['git', 'add', '--verbose', dest_file], cwd=args.source)
 
         # Push changes
-        for pattern in globs:
-            for entry in glob.glob(pattern):
-                subprocess.run(['git', 'add', '--verbose', entry], cwd=args.source)
-        if globs:
-            author = 'Liri CI <ci@liri.io>'
-            subject = 'Automatic merge of Transifex translations'
-            subprocess.run(['git', 'config', '--global', 'push.default', 'simple'], cwd=args.source)
-            subprocess.run(['git', 'commit', '--author=' + author, '--message=' + subject], cwd=args.source)
+        if is_ci:
+            for pattern in globs:
+                for entry in glob.glob(pattern):
+                    subprocess.run(['git', 'add', '--verbose', entry], cwd=args.source)
+            if globs:
+                author = 'Liri CI <ci@liri.io>'
+                subject = 'Automatic merge of Transifex translations'
+                subprocess.run(['git', 'config', '--global', 'push.default', 'simple'], cwd=args.source)
+                subprocess.run(['git', 'commit', '--author=' + author, '--message=' + subject], cwd=args.source)
             subprocess.run(['git', 'push'], cwd=args.source)
