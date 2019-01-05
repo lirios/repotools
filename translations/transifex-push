@@ -60,6 +60,7 @@ if __name__ == '__main__':
             # Update source
             if source_type == 'QT':
                 source_directory = config.get(section, 'liri_source_directory')
+                os.makedirs(os.path.dirname(os.path.abspath(source_file)), exist_ok=True)
                 subprocess.run(['lupdate-qt5', source_directory, '-ts', '-no-obsolete', source_file], cwd=args.source)
 
     # Push
