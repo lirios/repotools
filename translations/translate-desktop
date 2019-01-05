@@ -1,0 +1,147 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# This file is part of Liri.
+#
+# Copyright (C) 2019 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+# $BEGIN_LICENSE:MIT$
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+# $END_LICENSE$
+#
+
+import io
+import os
+
+
+class ParsingError(Exception):
+    pass
+
+
+class DesktopParser(object):
+    def __init__(self, filename=None):
+        self._content = dict()
+        if filename:
+            self.parse(filename)
+
+    def parse(self, filename):
+        content = self._content
+
+        if not os.path.isfile(filename):
+            raise ParsingError('"%s" is not a file' % filename)
+
+        try:
+            # Nowadays content is UTF-8, but legacy files can have different
+            # encodings, including mixed encodings in the same file.
+            # We don't even try to decode them, we rather silence the errors.
+            fd = io.open(filename, 'r', encoding='utf-8', errors='replace')
+        except IOError as e:
+            raise e
+
+        # Parse
+        for line in fd:
+            line = line.strip()
+            if not line:
+                continue
+            elif line[0] == '#':
+                continue
+            elif line[0] == '[':
+                current_group = line.lstrip('[').rstrip(']')
+                if self.has_group(current_group):
+                    raise ParsingError('Duplicate group "%s" in "%s"' % (current_group, filename))
+                else:
+                    content[current_group] = {}
+            else:
+                try:
+                    key, value = line.split('=', 1)
+                except ValueError:
+                    raise ParsingError('Invalid line: %s in "%s"' % (line, filename))
+                key = key.strip() # Spaces before/after '=' should be ignored
+                try:
+                    if self.has_key(key, current_group):
+                        raise ParsingError('Duplicate key "%s" in group "%s" in "%s"' % (key, current_group, filename))
+                    else:
+                        content[current_group][key] = value.strip()
+                except (IndexError, UnboundLocalError):
+                    raise ParsingError('Parsing error on key, group missing in "%s"' % filename)
+        fd.close()
+
+        self.filename = filename
+
+    def save(self, filename):
+        fd = io.open(filename, 'w', encoding='utf-8')
+
+        last_group = None
+        for group in self._content.keys():
+            if last_group:
+                fd.write('\n')
+            fd.write('[' + group + ']\n')
+            last_group = group
+            for key in sorted(self._content[group].keys()):
+                fd.write('%s=%s\n' % (key, self._content[group][key]))
+
+        fd.close()
+
+    def groups(self):
+        return self._content.keys()
+
+    def has_group(self, group):
+        return group in self._content
+
+    def keys(self, group):
+        return self._content[group].keys()
+
+    def has_key(self, key, group=None):
+        if not group:
+            group = 'Desktop Entry'
+        return key in self._content[group]
+
+    def get(self, group, key):
+        if self.has_key(key, group=group):
+            return self._content[group][key]
+        return None
+
+    def set(self, group, key, value):
+        self._content[group][key] = value
+
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--source', type=str, required=True, help='Desktop file template')
+    parser.add_argument('--dest', type=str, required=True, help='Desktop file')
+    parser.add_argument('translations', action='append', nargs='*', help='Translations')
+    args = parser.parse_args()
+
+    # Load the template
+    parser = DesktopParser(args.source)
+
+    # Load all the translated entries and merge theme with the source
+    for filename in args.translations[0]:
+        translation = DesktopParser(filename)
+        for group in translation.groups():
+            for key in translation.keys(group):
+                if '[' in key and ']' in key and not key.startswith('Icon'):
+                    parser.set(group, key, translation.get(group, key))
+
+    # Write the translated desktop file
+    parser.save(args.dest)
