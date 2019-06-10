@@ -82,12 +82,14 @@ if __name__ == '__main__':
                 if is_ci:
                     subprocess.run(['git', 'add', '--verbose', dest_file], cwd=args.source)
 
-        # Push changes
+        # Add new files
         if is_ci:
             for pattern in globs:
                 for entry in glob.glob(pattern):
                     subprocess.run(['git', 'add', '--verbose', entry], cwd=args.source)
-            if globs:
-                subject = 'Automatic merge of Transifex translations'
-                subprocess.run(['git', 'commit', '--message=' + subject], cwd=args.source)
-            subprocess.run(['git', 'push'], cwd=args.source)
+
+    # Push changes
+    if is_ci and globs:
+        subject = 'Automatic merge of Transifex translations'
+        subprocess.run(['git', 'commit', '--message=' + subject], cwd=args.source)
+        subprocess.run(['git', 'push'], cwd=args.source)
