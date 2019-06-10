@@ -64,7 +64,7 @@ if __name__ == '__main__':
     if is_ci:
         subprocess.run(['git', 'config', 'user.email', email], cwd=args.source)
         subprocess.run(['git', 'config', 'user.name', author], cwd=args.source)
-        subprocess.run(['git', 'config', '--global', 'push.default', 'simple'], cwd=args.source)
+        subprocess.run(['git', 'config', 'push.default', 'simple'], cwd=args.source)
 
     # Determine the file globs
     for section in config.sections():
