@@ -56,6 +56,15 @@ if __name__ == '__main__':
     is_ci = 'CI' in os.environ
     globs = []
 
+    # Author and email
+    author = 'Liri CI'
+    email = 'ci@liri.io'
+
+    # Set user and email
+    if is_ci:
+        subprocess.run(['git', 'config', 'user.email', email], cwd=args.source)
+        subprocess.run(['git', 'config', 'user.name', author], cwd=args.source)
+
     # Determine the file globs
     for section in config.sections():
         if config.has_option(section, 'file_filter'):
@@ -78,8 +87,7 @@ if __name__ == '__main__':
                 for entry in glob.glob(pattern):
                     subprocess.run(['git', 'add', '--verbose', entry], cwd=args.source)
             if globs:
-                author = 'Liri CI <ci@liri.io>'
                 subject = 'Automatic merge of Transifex translations'
                 subprocess.run(['git', 'config', '--global', 'push.default', 'simple'], cwd=args.source)
-                subprocess.run(['git', 'commit', '--author=' + author, '--message=' + subject], cwd=args.source)
+                subprocess.run(['git', 'commit', '--message=' + subject], cwd=args.source)
             subprocess.run(['git', 'push'], cwd=args.source)
