@@ -53,7 +53,7 @@ if __name__ == '__main__':
     subprocess.run(['tx', 'pull', '--force', '--all', '--minimum-perc=5'], cwd=args.source)
 
     # Push changes if under CI
-    is_ci = os.environ.get('CI', 'x').lower() == 'true'
+    is_ci = 'CI' in os.environ
     globs = []
 
     # Determine the file globs
