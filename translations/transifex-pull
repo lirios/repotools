@@ -90,6 +90,6 @@ if __name__ == '__main__':
 
     # Push changes
     if is_ci and globs:
-        subject = 'Automatic merge of Transifex translations'
+        subject = 'Automatic merge of Transifex translations\n\n[ci skip]'
         subprocess.run(['git', 'commit', '--message=' + subject], cwd=args.source)
         subprocess.run(['git', 'push'], cwd=args.source)
