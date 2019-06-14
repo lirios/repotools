@@ -1,0 +1,57 @@
+def repositories = ['appcenter', 'browser', 'calculator', 'files', 'terminal',
+                    'text', 'settings', 'networkmanager', 'power-manager',
+                    'pulseaudio', 'screencast', 'session', 'screenshot',
+                    'shell']
+
+def parallelStagesMap = repositories.collectEntries {
+    ["${it}" : generateStage(it)]
+}
+
+def generateStage(job) {
+    return {
+        stage("Update ${job}") {
+            script {
+                checkout([$class: 'GitSCM', branches: [[name: 'develop']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${job}"]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'ci-ssh', url: "git@github.com:lirios/${job}.git"]]])
+                dir("${job}") {
+                    sh label: 'Set branch', script: "git checkout develop"
+                    sh label: 'Push', script: 'transifex-push .'
+                    withCredentials([sshUserPrivateKey(credentialsId: 'ci-ssh', keyFileVariable: 'KEY_FILE')]) {
+                        sh label: 'Pull', script: "GIT_SSH_COMMAND='ssh -i ${KEY_FILE} -o StrictHostKeyChecking=no' transifex-pull ."
+                    }
+                }
+                sh label: 'Delete clone', script: "rm -rf ${job}"
+            }
+        }
+    }
+}
+
+pipeline {
+    agent {
+        docker {
+            image 'fedora:30'
+            args '--user root'
+        }
+    }
+    environment {
+        CI = 1
+        TX_TOKEN = credentials('transifex-token')
+    }
+    stages {
+        stage('Preparation') {
+            steps {
+                sh label: 'Installation', script: '''dnf install -y git transifex-client qt5-linguist binutils
+strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
+curl -o /usr/bin/transifex-push https://raw.githubusercontent.com/lirios/repotools/develop/translations/transifex-push && chmod 755 /usr/bin/transifex-push
+curl -o /usr/bin/transifex-pull https://raw.githubusercontent.com/lirios/repotools/develop/translations/transifex-pull && chmod 755 /usr/bin/transifex-pull
+curl -o /usr/bin/translate-desktop https://raw.githubusercontent.com/lirios/repotools/develop/translations/translate-desktop && chmod 755 /usr/bin/translate-desktop'''
+            }
+        }
+        stage('Build') {
+            steps {
+                script {
+                    parallel parallelStagesMap
+                }
+            }
+        }
+    }
+}
