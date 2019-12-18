@@ -33,7 +33,6 @@ import glob
 import os
 import subprocess
 
-
 if __name__ == '__main__':
     import argparse
 
@@ -47,7 +46,7 @@ if __name__ == '__main__':
         config = configparser.ConfigParser()
         config.read_file(open(transifex_filename))
     else:
-        raise Exception('File "%s" doesn\'t exist' % transifex_filename)
+        raise SystemExit('File "%s" doesn\'t exist' % transifex_filename)
 
     # Pull translations
     subprocess.run(['tx', 'pull', '--force', '--all', '--minimum-perc=5'], cwd=args.source)
