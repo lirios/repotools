@@ -47,6 +47,8 @@ if __name__ == '__main__':
         lupdate = shutil.which(name)
         if lupdate is not None:
             break
+    if lupdate is None:
+        raise SystemExit('Cannot find lupdate')
 
     # Read Transifex configuration
     transifex_filename = os.path.join(args.source, '.tx', 'config')
