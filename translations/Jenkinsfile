@@ -28,7 +28,7 @@ def generateStage(job) {
 pipeline {
     agent {
         docker {
-            image 'fedora:30'
+            image 'fedora:31'
             args '--user root'
         }
     }
