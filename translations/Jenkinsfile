@@ -29,7 +29,7 @@ def generateStage(job) {
 pipeline {
     agent {
         docker {
-            image 'liridev/ci-fedora-jenkins'
+            image 'liridev/ci-fedora-jenkins:31'
         }
     }
     environment {
