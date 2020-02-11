@@ -30,16 +30,20 @@ pipeline {
     agent {
         docker {
             image 'liridev/ci-fedora-jenkins:31'
+            alwaysPull true
         }
     }
     environment {
         CI = 1
         TX_TOKEN = credentials('transifex-token')
+        QT_SELECT = 5
     }
     stages {
         stage('Preparation') {
             steps {
                 sh label: 'Installation', script: '''
+sudo dnf install -y transifex-client git qtchooser qt5-linguist binutils
+sudo strip --remove-section=.note.ABI-tag /usr/lib64/libQt5Core.so.5
 curl -O https://raw.githubusercontent.com/lirios/repotools/develop/translations/transifex-push && chmod 755 transifex-push
 curl -O https://raw.githubusercontent.com/lirios/repotools/develop/translations/transifex-pull && chmod 755 transifex-pull
 curl -O https://raw.githubusercontent.com/lirios/repotools/develop/translations/translate-desktop && chmod 755 translate-desktop
