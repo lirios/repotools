@@ -27,17 +27,14 @@
 # $END_LICENSE$
 #
 
+import argparse
 import github
 import os
 
 rename = {
-    "need info": "needs info",
-    "easy": "good first issue",
 }
 
 merge = {
-    "needs reproduction": "needs info",
-    "feature": "enhancement",
 }
 
 labels = {
@@ -80,6 +77,15 @@ descriptions = {
     "good first issue": "Good for newcomers",
 }
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--dry-run', '-n', dest='dry_run', action='store_true')
+args = parser.parse_args()
+
+# Create a token with the following scopes and paste it into the file:
+#   - repo -> repo:status
+#   - repo -> public_repo
+#   - admin:org -> read:org
+#   - user -> read:user
 with open(os.path.expanduser("~/.cache/liri-repotools"), "r") as fd:
     token = fd.readline().strip()
 gh = github.Github(token)
@@ -102,33 +108,38 @@ for repo in lirios_org.get_repos(type="public"):
         except:
             pass
         else:
-            if label.edit(newname, label.color):
+            if args.dry_run or label.edit(newname, label.color):
                 print("Rename {} to {}".format(oldname, newname))
     # Create new labels and change color
     for name in labels.keys():
         try:
             label = repo.get_label(name)
         except:
-            label = repo.create_label(name, labels[name], description=descriptions.get(name))
-            if label:
-                print("Created label {} ({}) with color {}".format(label.name, descriptions.get(name, "n.a."), label.color))
+            if args.dry_run:
+                print("Create label {} ({}) with color {}".format(name, descriptions.get(name, "n.a."), labels[name]))
             else:
-                print("Failed to created label {}".format(name))
+                label = repo.create_label(name, labels[name], description=descriptions.get(name))
+                if label:
+                    print("Created label {} ({}) with color {}".format(label.name, descriptions.get(name, "n.a."), label.color))
+                else:
+                    print("Failed to created label {}".format(name))
         else:
             if label.color != labels[name] or label.description != descriptions.get(name):
-                label.edit(name, labels[name], description=descriptions.get(name))
+                if not args.dry_run:
+                    label.edit(name, labels[name], description=descriptions.get(name))
                 if descriptions.get(name):
-                    print("Set {} color and description \"{}\" to {} successfully".format(label.color, descriptions.get(name), label.color))
+                    print("Set label '{}' color to {} and description to \"{}\" successfully".format(name, label.color, descriptions.get(name)))
                 else:
-                    print("Set {} color to {} successfully".format(label.color, label.color))
+                    print("Set label '{}' color to {} successfully".format(name, label.color))
     # Merge labels
     for oldname, newname in merge.items():
         try:
             old_label = repo.get_label(oldname)
             new_label = repo.get_label(newname)
-            for issue in repo.get_issues(labels=[label]):
-                issue.add_to_labels(new_label)
-            old_label.delete()
+            if not args.dry_run:
+                for issue in repo.get_issues(labels=[label]):
+                    issue.add_to_labels(new_label)
+                old_label.delete()
             print("Replace \"{}\" label with \"{}\"".format(oldname, newname))
         except:
             pass
