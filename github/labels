@@ -41,7 +41,7 @@ labels = {
     "bug": "F44336",
     "duplicate": "EEEEEE",
     "invalid": "EEEEEE",
-    "wontfix": "EEEEEE",
+    "wontfix": "FFFFFF",
     "needs info": "EEEEEE",
     "enhancement": "039BE5",
     "help wanted": "FFC107",
