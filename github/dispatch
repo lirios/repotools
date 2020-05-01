@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: 2020 Pier Luigi Fiorini <pierluigi.fiorini@liri.io>
+#
+# SPDX-License-Identifier: MIT
+
+token_path=~/.cache/liri-repotools
+
+if [ ! -r $token_path ]; then
+    echo "Please write your token to $token_path and try again"
+    exit 1
+fi
+
+token=$(cat $token_path)
+event_type=$1
+repo=$2
+
+if [ -z "$event_type" -o -z "$repo" ]; then
+    echo "Usage: $0 [event_type] [repo_name]"
+    exit 1
+fi
+
+curl -H "Accept: application/vnd.github.everest-preview+json" \
+     -H "Authorization: token $token" \
+     --request POST \
+     -d "{\"event_type\":\"$event_type\"}" \
+     https://api.github.com/repos/lirios/${repo}/dispatches
