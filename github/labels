@@ -54,6 +54,7 @@ labels = {
     "upstream": "FF8A80",
     "needs design": "FFC107",
     "hacktoberfest": "3F51B5",
+    "hacktoberfest-accepted": "3F51B5",
     "good first issue": "4CAF50",
 }
 
@@ -74,6 +75,7 @@ descriptions = {
     "upstream": "Upstream issue",
     "needs design": "This could use some help from a designer",
     "hacktoberfest": "Hacktoberfest",
+    "hacktoberfest-accepted": "Accepted for Hacktoberfest",
     "good first issue": "Good for newcomers",
 }
 
